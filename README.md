@@ -5,4 +5,4 @@ In 2020, Andrej Karpathy implemented a small, scalar valued Autograd engine insp
 ### What do we need? 
 
 - A basic understanding of derivatives 
-- List of [standard python operators(https://docs.python.org/3/library/operator.html)] that we can overload
+- List of [standard python operators](https://docs.python.org/3/library/operator.html) that we can overload
