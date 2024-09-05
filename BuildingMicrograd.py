@@ -50,3 +50,31 @@ class Value:
         output._backward = _backward
 
         return output
+    
+    def backward(self):
+        graph = Graph()
+        
+        list_topological_order = graph.get_topo(self)
+        
+        self.grad = 1.0 
+        for node in reversed(list_topological_order):
+            node._backward()
+
+
+# topological sort    
+class Graph: 
+    def __init__(self):
+        self.topo = []
+        self.visited_nodes = set()
+
+    def build_topo(self, vertex):
+        if vertex not in self.visited_nodes:
+            self.visited_nodes.add(vertex)
+            for child in vertex._previous:
+                self.build_topo(child)
+            self.topo.append(vertex)
+
+    def get_topo(self, vertex):
+        self.build_topo(vertex)
+        return self.topo
+    
