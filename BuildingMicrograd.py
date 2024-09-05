@@ -17,6 +17,7 @@ class Value:
         return f"Value(data={self.data})"
   
     def __add__(self, other):
+        other = other if isinstance(other, Value) else Value(other)
         output = Value(self.data + other.data, (self, other), '+')
         
         def _backward():
@@ -27,8 +28,18 @@ class Value:
         output._backward = _backward
         
         return output
+    
+    def __radd__(self, other): # other + self
+       return self + other
+    
+    def __neg__(self):
+       return self * -1
+    
+    def __sub__(self, other): 
+       return self + (-other)
 
     def __mul__(self, other):
+        other = other if isinstance(other, Value) else Value(other)
         output = Value(self.data * other.data, (self, other), '*')
         
         def _backward():
@@ -37,6 +48,19 @@ class Value:
           other.grad += self.data * output.grad   
         output._backward = _backward
         
+        return output
+    
+    def __rmul__(self, other): # other * self 
+       return self * other
+    
+    def __pow__(self, other):
+        assert isinstance(other, (int, float)), "only supporting int/float powers for now"
+        output = Value(self.data**other, (self,), f'**{other}')
+
+        def _backward():
+            self.grad += other * (self.data ** (other - 1)) * output.grad
+        output._backward = _backward
+
         return output
     
     def tanh(self): 
@@ -87,6 +111,34 @@ class Neuron:
 
     def __call__(self, x):
         # w * x + b
-        activation = sum((wi*Value(xi) for wi, xi in zip(self.weight, x)), self.bias)
+        activation = sum((wi*xi for wi, xi in zip(self.weight, x)), self.bias)
         output = activation.tanh()
         return output
+    
+    def parameters(self):
+        return self.weight + [self.bias]
+    
+class Layer:
+  # number_inputs, number_outputs
+  def __init__(self, number_inputs, number_outputs):
+    self.neurons = [Neuron(number_inputs) for _ in range(number_outputs)]
+  
+  def __call__(self, x):
+    outputs = [n(x) for n in self.neurons]
+    return outputs[0] if len(outputs) == 1 else outputs
+  
+  def parameters(self):
+    return [p for neuron in self.neurons for p in neuron.parameters()]
+
+class MLP:
+  def __init__(self, number_inputs, list_number_outputs):
+    sizes = [number_inputs] + list_number_outputs
+    self.layers = [Layer(sizes[i], sizes[i+1]) for i in range(len(list_number_outputs))]
+  
+  def __call__(self, x):
+    for layer in self.layers:
+      x = layer(x)
+    return x
+  
+  def parameters(self):
+    return [p for layer in self.layers for p in layer.parameters()]
