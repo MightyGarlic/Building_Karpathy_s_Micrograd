@@ -21,8 +21,8 @@ class Value:
         def _backward():
             # chain rule for addition
             # local derivative * global derivative of output
-            self.grad = 1.0 * output.grad
-            other.grad = 1.0 * output.grad
+            self.grad += 1.0 * output.grad
+            other.grad += 1.0 * output.grad
         output._backward = _backward
         
         return output
@@ -32,8 +32,8 @@ class Value:
         
         def _backward():
           # chain rule for multiplication
-          self.grad = other.data * output.grad
-          other.grad = self.data * output.grad   
+          self.grad += other.data * output.grad
+          other.grad += self.data * output.grad   
         output._backward = _backward
         
         return output
@@ -46,7 +46,7 @@ class Value:
         def _backward():
             # chain rule for tanh
             x = self.data
-            self.grad = (1 / cosh(x)**2) * output.grad
+            self.grad += (1 / cosh(x)**2) * output.grad
         output._backward = _backward
 
         return output
