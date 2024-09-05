@@ -11,5 +11,5 @@ In 2020, Andrej Karpathy implemented a small, scalar valued Autograd engine insp
 
 ### Want more? 
 
-- original [micrograd implementation](https://github.com/karpathy/micrograd)
+- Original [micrograd implementation](https://github.com/karpathy/micrograd)
 - Here's [Andrej Karpathy's full syllabus](https://karpathy.ai/zero-to-hero.html) which includes building makemore, and building GPT from scratch
