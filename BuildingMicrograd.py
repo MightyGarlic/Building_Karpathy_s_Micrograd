@@ -1,4 +1,5 @@
 from math import exp, cosh
+import random
 import numpy as np
 
 # Check out the python operator documentation to learn which standard operators you can overload: https://docs.python.org/3/library/operator.html
@@ -78,3 +79,14 @@ class Graph:
         self.build_topo(vertex)
         return self.topo
     
+
+class Neuron: 
+    def __init__(self, number_inputs):
+        self.weight = [Value(random.uniform(-1,1)) for _ in range(number_inputs)]
+        self.bias = Value(random.uniform(-1,1))
+
+    def __call__(self, x):
+        # w * x + b
+        activation = sum((wi*Value(xi) for wi, xi in zip(self.weight, x)), self.bias)
+        output = activation.tanh()
+        return output
